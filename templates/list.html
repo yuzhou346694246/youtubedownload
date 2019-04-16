@@ -1,0 +1,16 @@
+<!doctype html>
+<title>Path: {{ tree.name }}</title>
+<h1>{{ tree.name }}</h1>
+<ul>
+{%- for item in tree.children recursive %}
+    <li>
+    {% if item.isdir %}
+        {{ item.name }}
+    {% else %}    
+        <a href="/return-file?path={{ item.name }}">{{ item.name }}</a>
+    {% endif %}
+    {%- if item.children -%}
+        <ul>{{ loop(item.children) }}</ul>
+    {%- endif %}</li>
+{%- endfor %}
+</ul>
