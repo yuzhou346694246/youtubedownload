@@ -12,6 +12,7 @@ def index():
     if request.method == 'GET':
         return render_template('index.html')
     else:
+        print(request.form['url'])
         download(request.form['url'])
 
 def download(url):
