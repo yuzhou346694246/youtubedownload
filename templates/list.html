@@ -7,7 +7,7 @@
     {% if item.isdir %}
         {{ item.name }}
     {% else %}    
-        <a href="/return-file?path={{ item.name }}">{{ item.name }}</a>
+        <a href="/return-file?hash={{ item.hashvalue }}">{{ item.name }}</a>
     {% endif %}
     {%- if item.children -%}
         <ul>{{ loop(item.children) }}</ul>
