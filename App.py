@@ -3,9 +3,11 @@ from flask import Flask,request,url_for,render_template, send_file
 import youtube_dl
 import os
 import multiprocessing
+import hashlib
 
 app = Flask(__name__)
 
+hashfilenames = {}
 #url_for('static',fi)
 
 @app.route("/", methods=['GET','POST'])
@@ -21,6 +23,7 @@ def index():
 
 @app.route("/list")
 def downloadList():
+    init_hashfilenames()
     '''
     列出下载列表
     '''
@@ -32,9 +35,21 @@ def downloadList():
 def returnFile():
     basedir = './downloads'
     try:
-        path = os.path.join(basedir,request.args.get('path'))
+        arg = request.args.get('hash')
+        hashinfo = gethashinfo(arg)
+        if hashinfo == None:
+            return "<h1>文件不存在{}</h1>".format(hashfilenames)
+        #path = os.path.join(basedir,request.args.get('path'))
+        path = hashinfo['path']
+        filename = hashinfo['filename']
         if os.path.exists(path) and os.path.isfile(path):
+            print(path)
             return send_file(path,as_attachment=True)
+            '''
+            文件名中不能出现#号，否则就出错？这是为什么
+            '''
+        else:
+            return "<h1>{}:{}</h1>".format(arg,path)
     except KeyError:
         return "<h1>文件不存在</h1>"
 
@@ -58,5 +73,49 @@ def make_tree(path):
             if os.path.isdir(fn):
                 tree['children'].append(make_tree(fn))
             else:
-                tree['children'].append(dict(name=name,isdir=False))
+                tree['children'].append(dict(name=name,isdir=False,hashvalue=filename2hash(fn)))
     return tree
+
+
+def filename2hash(name):
+    md5 = hashlib.md5()
+    md5.update(name.encode(encoding='UTF-8'))
+    return md5.hexdigest()[:6]
+
+def hash2filename(h,path):
+    #basedir = './downloads'
+    filenames = os.listdir(path)
+    for filename in filenames:
+        if os.path.isfile(filename):
+            filename = os.path.join(path,filename)
+            if filename2hash(filename) == h:
+                return filename
+        else:
+            filename = os.path.join(path,filename)
+            return hash2filename(h,filename)
+
+
+def init_hashfilenames():
+    global hashfilenames
+    hashfilenames = {}
+    def listdir(path):
+        #if os.path.isfile(path):
+        #    return None
+        filenames = os.listdir(path)
+        for filename in filenames:
+            tpath = os.path.join(path,filename)
+            if os.path.isdir(filename):
+                listdir(tpath)
+            else:
+                h = filename2hash(tpath)
+                hashfilenames[h] = { 'filename':filename,'path':tpath}
+    basedir = './downloads'
+    listdir(basedir)
+
+
+def gethashinfo(h):
+    try:
+        return hashfilenames[h]
+    except KeyError:
+        return None
+                
