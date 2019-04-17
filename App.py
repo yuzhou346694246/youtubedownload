@@ -104,7 +104,7 @@ def init_hashfilenames():
         filenames = os.listdir(path)
         for filename in filenames:
             tpath = os.path.join(path,filename)
-            if os.path.isdir(filename):
+            if os.path.isdir(tpath):
                 listdir(tpath)
             else:
                 h = filename2hash(tpath)
