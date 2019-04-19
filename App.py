@@ -17,7 +17,10 @@ def index():
         return render_template('index.html')
     else:
         print(request.form['url'])
-        download(request.form['url'])
+        try:
+            download(request.form['url'])
+        except:
+            return redirect('/')
 
 
 
@@ -73,7 +76,7 @@ def returnFile():
 def download(url):
     ydl_opts = {
         #'format':'bestvideo',
-        #'merge_output_format':'mp4', 后处理问题，有时候会出错
+        #'merge_output_format':'mp4', 后处理问题，有时候会出错 youtube 更新编码导致在最佳视频和最佳音频设置下，某些情况合并不成功
         'format': 'bestvideo+bestaudio/best',
         'outtmpl':'./downloads/%(title)s.%(ext)s'
     }
