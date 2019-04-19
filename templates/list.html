@@ -8,6 +8,7 @@
         {{ item.name }}
     {% else %}    
         <a href="/return-file?hash={{ item.hashvalue }}">{{ item.name }}</a>
+        {{item.filesize}}
     {% endif %}
     <a href="/delete?hash={{ item.hashvalue }}">删除</a>
     {%- if item.children -%}

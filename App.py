@@ -94,7 +94,7 @@ def make_tree(path):
             if os.path.isdir(fn):
                 tree['children'].append(make_tree(fn))
             else:
-                tree['children'].append(dict(name=name,isdir=False,hashvalue=filename2hash(fn)))
+                tree['children'].append(dict(name=name,isdir=False,hashvalue=filename2hash(fn),filesize=getfilesize(fn)))
     return tree
 
 
@@ -115,6 +115,20 @@ def hash2filename(h,path):
             filename = os.path.join(path,filename)
             return hash2filename(h,filename)
 
+def getfilesize(fn):
+    try:
+        if os.path.isfile(fn):
+            fsize = os.path.getsize(fn)
+            if fsize <1024:
+                return "{}B".format(fsize)
+            elif fsize < 1024*1024:
+                return "{}KB".format(int(fsize/1024))
+            elif fsize < 1024*1024*1024:
+                return "{}MB".format(int(fsize/(1024*1024)))
+            else:
+                return "{}GB".format(int(fsize/(1024*1024*1024)))
+    except:
+        return None
 
 def init_hashfilenames():
     global hashfilenames
