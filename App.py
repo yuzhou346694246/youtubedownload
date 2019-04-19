@@ -73,7 +73,7 @@ def returnFile():
 def download(url):
     ydl_opts = {
         #'format':'bestvideo',
-        'merge_output_format':'mp4',
+        #'merge_output_format':'mp4', 后处理问题，有时候会出错
         'format': 'bestvideo+bestaudio/best',
         'outtmpl':'./downloads/%(title)s.%(ext)s'
     }
