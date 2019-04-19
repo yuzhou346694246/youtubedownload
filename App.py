@@ -72,7 +72,9 @@ def returnFile():
 ####################以下为功能函数
 def download(url):
     ydl_opts = {
-        'format':'bestvideo',
+        #'format':'bestvideo',
+        'merge_output_format':'mp4',
+        'format': 'bestvideo+bestaudio/best',
         'outtmpl':'./downloads/%(title)s.%(ext)s'
     }
     with youtube_dl.YoutubeDL(ydl_opts) as ydl:
